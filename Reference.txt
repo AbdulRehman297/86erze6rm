@@ -1,0 +1,2 @@
+https://discourse.numenta.org/t/anomaly-detection-with-htm-core-model-on-sine/8975
+https://github.com/numenta/nupic.research/tree/master/src/nupic/research/frameworks/htm/temporal_memory
