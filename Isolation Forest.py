@@ -3,23 +3,16 @@ from sklearn.ensemble import IsolationForest
 import matplotlib.pyplot as plt
 
 def load_and_preprocess_data(file_path):
-    """Load and preprocess healthcare IoT dataset."""
+    
     df = pd.read_csv(file_path)
-
-    # Debug: Print column names
     print("Columns in dataset:", df.columns)
-
-    # Drop missing values
     df.dropna(inplace=True)
-
-    # Convert timestamp to datetime & keep it as index
     if 'Timestamp' in df.columns:
         df['Timestamp'] = pd.to_datetime(df['Timestamp'])
         df.set_index('Timestamp', inplace=True)
     else:
         print("Warning: 'Timestamp' column not found.")
 
-    # Rename columns if they exist
     column_mapping = {
         'Temperature (°C)': 'Temperature',
         'Heart_Rate (bpm)': 'Heart_Rate',
@@ -27,7 +20,6 @@ def load_and_preprocess_data(file_path):
     }
     df.rename(columns={k: v for k, v in column_mapping.items() if k in df.columns}, inplace=True)
 
-    # Ensure required columns exist before training
     required_cols = ['Temperature', 'Heart_Rate', 'Target_Heart_Rate']
     for col in required_cols:
         if col not in df.columns:
@@ -36,7 +28,6 @@ def load_and_preprocess_data(file_path):
     # Train anomaly detection model
     model = IsolationForest(contamination=0.05, random_state=42)
     model.fit(df[required_cols])
-
     # Predict anomalies
     df['Anomaly'] = model.predict(df[required_cols])
 
@@ -50,8 +41,7 @@ if __name__ == "__main__":
 def plot_anomalies(df):
     """Plot temperature and heart rate with anomalies."""
     plt.figure(figsize=(12, 6))
-
-    # Temperature Plot
+# Temperature
     plt.subplot(2, 1, 1)
     plt.plot(df.index, df['Temperature'], label='Temperature', color='blue')
     plt.scatter(df[df['Anomaly'] == -1].index, df[df['Anomaly'] == -1]['Temperature'],
@@ -61,7 +51,7 @@ def plot_anomalies(df):
     plt.title("Temperature Trends with Anomalies")
     plt.legend()
 
-    # Heart Rate Plot
+    # Heart Rate
     plt.subplot(2, 1, 2)
     plt.plot(df.index, df['Heart_Rate'], label='Heart Rate', color='green')
     plt.scatter(df[df['Anomaly'] == -1].index, df[df['Anomaly'] == -1]['Heart_Rate'],
